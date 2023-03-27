@@ -1,11 +1,9 @@
 
-
-
 def textfile(file):  #mouse ID here too?
     
     with open(file) as f:
             lines = [line.rstrip() for line in f.readlines()]
-                
+            
     for line in lines: 
         
         if line.startswith('mouse ID'):
@@ -60,7 +58,8 @@ def optimal_thresh(file,light,initial_delay):
             img_cropped = frame[light[1]:light[1]+light[3], light[0]:light[0]+light[2]]              
             ret,thresh = cv.threshold((img_cropped),240,255,cv.THRESH_BINARY)
             num_exeed_thresh = np.sum(thresh == 255)
-            if i == (delay - 90):
+            # shift.append(num_exeed_thresh)
+            if i == (delay - 90*30):
                 off = num_exeed_thresh
             if i == delay:
                 on = num_exeed_thresh

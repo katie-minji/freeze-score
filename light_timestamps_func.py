@@ -45,7 +45,7 @@ def check_timestamps(lightup, shock_num):
     
     if len(ivalues) != shock_num+1:
         print("presentation number in video doesn't match...\n")
-    
+        
     timestamps = [time.strftime('%H:%M:%S', time.gmtime(round(x/30))) for x in ivalues]  
     
     return ivalues, timestamps
@@ -95,16 +95,14 @@ def light_off(file,light,ivalues,tone_duration,down_error):
     return ivalues_2
     
 
+
 def integrate_lights(ivalues, ivalues_2):
     
-    initial = (ivalues[0],ivalues[1])
-    light_timing = [initial]
-    
-    for x in range(1,len(ivalues)):
-        pair = (ivalues[x],ivalues_2[x-1])
-        light_timing.append(pair)
+    ivalues.pop(0)
+    on_off_idx = list(zip(ivalues, ivalues_2))
         
-    return light_timing
+    return on_off_idx
+    
     
 
 

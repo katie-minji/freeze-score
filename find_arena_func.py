@@ -163,6 +163,49 @@ def find_arena(file):
 
 
 
+
+def crop_frame(file):
+    
+    import cv2 as cv
+    print('\nSelect the lightbulb and press the enter key')
+    cap = cv.VideoCapture(file)
+    i = 0
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == True:
+            if i == 0:
+                break
+            i += 1
+        else:
+            break
+        
+    light_coordinates = cv.selectROIs('select_light', frame)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+    
+    return light_coordinates
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if (__name__ == '__main__'):
     print('Executing find_arena_func.py\n')
     
