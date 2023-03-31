@@ -1,4 +1,26 @@
 
+new_path = r'G:\My Drive\pickle\fz_score\from_fz_score'
+
+
+def progress_checker(new_path):
+    
+    import os
+    from datetime import datetime
+    
+    ori_path = os.getcwd()
+    os.chdir(new_path)
+    
+    now = datetime.now()
+    filename = now.strftime("%Y_%m_%d__%H_%M_%S")
+    os.mkdir(filename)
+    new_folder_path = os.path.join(new_path, filename)
+    os.chdir(new_folder_path)
+    
+    with open("Video Process Checker.txt","r+") as log:
+        
+        
+
+
 class Setup:
 
     def get_files():
