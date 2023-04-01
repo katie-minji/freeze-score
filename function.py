@@ -1,27 +1,121 @@
 
-new_path = r'G:\My Drive\pickle\fz_score\from_fz_score'
-
-
-def progress_checker(new_path):
+class Process:
     
-    import os
-    from datetime import datetime
-    
-    ori_path = os.getcwd()
-    os.chdir(new_path)
-    
-    now = datetime.now()
-    filename = now.strftime("%Y_%m_%d__%H_%M_%S")
-    os.mkdir(filename)
-    new_folder_path = os.path.join(new_path, filename)
-    os.chdir(new_folder_path)
-    
-    with open("Video Process Checker.txt","r+") as log:
+    def initiate(new_path):
         
+        import os
+        from datetime import datetime
         
+        ori_path = os.getcwd()
+        os.chdir(new_path)
+        
+        now = datetime.now()
+        filename = now.strftime("%Y_%m_%d__%H_%M_%S")
+        os.mkdir(filename)
+        new_folder_path = os.path.join(new_path, filename)
+        os.chdir(new_folder_path)
+        
+        with open("Video Process Checker.txt","w") as log:
+            log.write("Video Processing Start")
+        
+        os.chdir(ori_path)
+        
+        return new_folder_path
+    
+    
+    def append(vid_rn, new_folder_path, start, a, total):
+        
+        import os
+        import time
+        from datetime import timedelta
+        from datetime import datetime
+        
+        ori_path = os.getcwd()
+        os.chdir(new_folder_path)
+        
+        end = time.time()
+        execution_time = time.strftime('%H:%M:%S', time.gmtime(end-start))
+        vid_rn = vid_rn+1
+        elapsed = end-a
+        temp = time.strftime('%H:%M:%S', time.gmtime(end-a))
+        perc = round((vid_rn/total),3)
+        time_left = time.strftime('%H:%M:%S', time.gmtime(elapsed*((1-perc)/perc)))
+        _ = datetime.now()+timedelta(seconds=(elapsed*(1/perc)))
+        endtime = _.strftime('%I:%M %p')
+        
+        _ = f'''video elapsed: {execution_time}
+        total elapsed: {temp}
+        progress: {vid_rn}/{total} ({perc*100}%)
+        End approximatly {endtime}. {time_left} left.\n\n
+        '''
+        
+        with open("Video Process Checker.txt", 'a') as log:
+            log.write(_)
+        
+        os.chdir(ori_path)
+        print(_)
+           
+        
+        return vid_rn
+    
+   
+        
+#%%
 
-
+class Pickle:
+    
+    def version(final_dict, new_folder_path):
+        
+        import pickle
+        import os
+        
+        os.chdir(new_folder_path)
+        with open('master.pkl', 'wb') as handle:
+            pickle.dump(final_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+    
+    def by_mouse(final_dict):
+        
+        import pickle
+        import os
+        
+        os.chdir()
+        separated = {}
+        
+        for vid_name in final_dict.keys():
+            mouse = vid_name.split()[0]
+            separated[mouse] = {}
+        for vid_name, data in final_dict.items():
+            mouse = vid_name.split()[0]
+            separated[mouse][vid_name] = data
+            
+        for mouse, data in separated.items():    
+            with open(mouse, 'wb') as handle:
+                pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        return separated
+    
+    
+#%%
+    
+ 
 class Setup:
+    
+    def redundent_filter(final_path, files, subdir):
+        
+        import glob
+        import os
+        
+        ori_path = os.getcwd()
+        os.chdir(final_path)
+        
+        already_list = glob.glob('*')
+        
+        os.chdir(ori_path)
+        
+        return files, subdir
+        
+        
 
     def get_files():
         
@@ -92,6 +186,8 @@ class Setup:
             context = 'A'
         
         return file, txt_file, context
+    
+    
 
 #%%
 
@@ -528,8 +624,4 @@ class Video:
         
         return pxl_shift
         
-    
-    
-
-    
     
