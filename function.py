@@ -559,6 +559,9 @@ class Video:
             ret, frame = cap.read()
             if ret == True:
                 
+                if i == 22560:
+                    break
+                
                 if i == 0:
                     previous = frame
                     current = frame
@@ -566,7 +569,8 @@ class Video:
                 elif i != 0:
                     current = frame
                     diff = cv.absdiff(previous,current)
-                    ret,diff_ = cv.threshold((diff),80,255,cv.THRESH_BINARY)
+                    diff = cv.cvtColor(diff, cv.COLOR_BGR2GRAY)
+                    ret,diff_ = cv.threshold((diff),20,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
             
@@ -579,7 +583,17 @@ class Video:
         cap.release()  
         cv.destroyAllWindows()
         
+        # thres = pxl_shift[20760:22560]
+        # import cv2
+        # cv2.imshow('window', diff_)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        
+        
         return pxl_shift
+    
+    
+    
     
     
     def circle(file,circle):
@@ -607,7 +621,7 @@ class Video:
                 elif i != 0:
                     current = frame
                     diff = cv.absdiff(previous,current)
-                    ret,diff_ = cv.threshold((diff),80,255,cv.THRESH_BINARY)
+                    ret,diff_ = cv.threshold((diff),20,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
             

@@ -4,7 +4,7 @@ import os
 import time
 from datetime import datetime
 
-func_loc = r'Z:\Soo B\Katie\codes\mine\temp\test'
+func_loc = r'D:\freeze-score'
 final_path = r'G:\My Drive\lab\pickle\fz_score\master_dict'  #store finalized file, final_dict by mouse
 new_path = r'G:\My Drive\lab\pickle\fz_score'  #folder to store score output and progress txt file
 os.chdir(func_loc)
@@ -43,7 +43,6 @@ for mouse in files:
             
                 light = UserSelect.light_crop(file, initial_delay)[0]
            
-            
             light_dict[mouse] = light
             up_error, down_error = UserSelect.optimal_thresh(file, light, initial_delay)
 
