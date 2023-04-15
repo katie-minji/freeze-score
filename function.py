@@ -101,7 +101,7 @@ class Pickle:
  
 class Setup:
     
-    def redundent_filter(final_path, files, subdir):
+    def redundent_filter(final_path, files, sub_dir):
         
         import glob
         import os
@@ -111,10 +111,23 @@ class Setup:
         
         already_list = glob.glob('*')
         
+        new_list = []
+        for x in sub_dir:
+            vid = os.path.basename(sub_dir[0])
+            new_list.append(vid)
+        
+        to_process = []
+        for x in new_list:
+            if x in already_list:
+                pass
+            else:
+                to_process.append(x)
+        
+        # make new file with only files from to process
+        
         os.chdir(ori_path)
         
-        return files, subdir
-        
+        return files, sub_dir
         
 
     def get_files():
@@ -558,9 +571,6 @@ class Video:
             
             ret, frame = cap.read()
             if ret == True:
-                
-                if i == 22560:
-                    break
                 
                 if i == 0:
                     previous = frame
