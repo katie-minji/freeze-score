@@ -16,7 +16,7 @@ class Process:
         os.chdir(new_folder_path)
         
         with open("Video Process Checker.txt","w") as log:
-            log.write("Video Processing Start")
+            log.write("Video Processing Start\n\n")
         
         os.chdir(ori_path)
         
@@ -44,10 +44,9 @@ class Process:
         endtime = _.strftime('%I:%M %p')
         
         _ = f'''video elapsed: {execution_time}
-        total elapsed: {temp}
-        progress: {vid_rn}/{total} ({perc*100}%)
-        End approximatly {endtime}. {time_left} left.\n\n
-        '''
+total elapsed: {temp}
+progress: {vid_rn}/{total} ({perc*100}%)
+End approximatly {endtime}. {time_left} left.\n\n'''
         
         with open("Video Process Checker.txt", 'a') as log:
             log.write(_)
@@ -55,9 +54,35 @@ class Process:
         os.chdir(ori_path)
         print(_)
            
-        
         return vid_rn
     
+    
+    def final_append(a, final_start, new_folder_path):
+        
+        import time
+        from datetime import datetime
+        import os
+        
+        ori_path = os.getcwd()
+        os.chdir(new_folder_path)
+        
+        b = time.time()
+        total_time = time.strftime('%H:%M:%S', time.gmtime(b-a))
+        final_end = datetime.now().strftime('%I:%M %p')
+        _ = f'''
+\n=======================================================
+Finished video analyzation!
+
+TOTAL EXECUATION TIME: {total_time}
+START TIME: {final_start}
+END TIME: {final_end}'''
+        
+        with open("Video Process Checker.txt", 'a') as log:
+            log.write(_)
+        
+        os.chdir(ori_path)
+        print(_)
+
    
         
 #%%
@@ -74,12 +99,12 @@ class Pickle:
             pickle.dump(final_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     
-    def by_mouse(final_dict):
+    def by_mouse(final_dict, final_path):
         
         import pickle
         import os
         
-        os.chdir()
+        os.chdir(final_path)
         separated = {}
         
         for vid_name in final_dict.keys():
@@ -92,8 +117,6 @@ class Pickle:
         for mouse, data in separated.items():    
             with open(mouse, 'wb') as handle:
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        
-        return separated
     
     
 #%%
@@ -560,8 +583,10 @@ class Video:
     
     def square(file):
         
+        #%%
         import cv2 as cv
         import numpy as np
+        import cv2
         
         i = 0
         pxl_shift = []
@@ -572,6 +597,14 @@ class Video:
             ret, frame = cap.read()
             if ret == True:
                 
+                mask = np.zeros(frame.shape[:2], dtype="uint8")
+                cv.circle(mask, (circle[0], circle[1]), circle[2], 255, -1)
+                frame = cv.bitwise_and(frame, frame, mask=mask)
+                
+                
+                if i == (3600+1800):
+                    break
+                
                 if i == 0:
                     previous = frame
                     current = frame
@@ -580,10 +613,15 @@ class Video:
                     current = frame
                     diff = cv.absdiff(previous,current)
                     diff = cv.cvtColor(diff, cv.COLOR_BGR2GRAY)
-                    ret,diff_ = cv.threshold((diff),20,255,cv.THRESH_BINARY)
+                    ret,diff_ = cv.threshold((diff),30,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
-            
+                    
+                    if i in range(3600+195,3600+235):
+                        cv2.imshow(str(i-3600), diff_)
+                        cv2.waitKey(0)
+                        cv2.destroyAllWindows()
+                    
                 previous = current
                 i+=1
                 
@@ -592,6 +630,9 @@ class Video:
             
         cap.release()  
         cv.destroyAllWindows()
+        
+    #%%
+        
         
         # thres = pxl_shift[20760:22560]
         # import cv2
