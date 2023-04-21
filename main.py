@@ -5,8 +5,9 @@ import time
 from datetime import datetime
 
 func_loc = r'D:\freeze-score'
-final_path = r'G:\My Drive\lab\pickle\fz_score\master_dict'  #store finalized file, final_dict by mouse
-new_path = r'G:\My Drive\lab\pickle\fz_score'  #folder to store score output and progress txt file
+new_path = r'G:\My Drive\lab\pickle\fz_score'  #folder to store score output (versioning, one dict) and progress txt file
+final_path = r'G:\My Drive\lab\pickle\fz_score\master_dict'  #store finalized file, final_dict pickle organized by mouse
+
 os.chdir(func_loc)
 
 from function import Process
@@ -20,7 +21,7 @@ new_folder_path = Process.initiate(new_path)
 files, sub_dir = Setup.get_files()
 ## Setup.filter(), remove ones already existing from pickle. 
 
-# initial video light and arena check/crop
+# initial video light and arena check/cropO
 arena_dict = {}
 light_dict = {}
 for mouse in files:
@@ -35,7 +36,7 @@ for mouse in files:
             print(mouse, by_day[0])
             mouse_id, shock_num, tone_duration, initial_delay = UserSelect.get_info_txt(txt_file)
             
-            if 'wt8' in mouse:                   #if rectangle contextB
+            if 'wt8' in mouse:                   #if rectangle contextBO
                 light = np.array([350,0,30,30])
             else:                                #if circle contextB
                 arena = UserSelect.circle(file)
@@ -103,7 +104,8 @@ for mouse in files:
         on_off_idx = LightTime.integrate_lights(ivalues, ivalues_2)
             
         if context == 'A':
-            pxl_shift = Video.square(file)
+            pxl_shift = []
+            # pxl_shift = Video.square(file)
         
         elif context == 'B':
             if 'wt8' in mouse:                   #if rectangle contextB
@@ -119,18 +121,11 @@ for mouse in files:
         vid_rn = Process.append(vid_rn, new_folder_path, start, a, total)
 
 
+# append final message to text file that it is all done
+Process.final_append(a, final_start, new_folder_path)
 
-b = time.time()
-total_time = time.strftime('%H:%M:%S', time.gmtime(b-a))
-final_end = datetime.now().strftime('%I:%M %p')
-_ = f'''
-\n=======================================================
-Finished video analyzation!
-
-TOTAL EXECUATION TIME: {total_time}
-START TIME: {final_start}
-END TIME: {final_end}'''
-print(_)
-
+# pickle save
+Pickle.version(final_dict, new_folder_path)
+Pickle.by_mouse(final_dict, final_path)
     
 
