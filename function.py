@@ -597,9 +597,9 @@ class Video:
             ret, frame = cap.read()
             if ret == True:
                 
-                mask = np.zeros(frame.shape[:2], dtype="uint8")
-                cv.circle(mask, (circle[0], circle[1]), circle[2], 255, -1)
-                frame = cv.bitwise_and(frame, frame, mask=mask)
+                # mask = np.zeros(frame.shape[:2], dtype="uint8")
+                # cv.circle(mask, (circle[0], circle[1]), circle[2], 255, -1)
+                # frame = cv.bitwise_and(frame, frame, mask=mask)
                 
                 
                 if i == (3600+1800):
@@ -613,7 +613,7 @@ class Video:
                     current = frame
                     diff = cv.absdiff(previous,current)
                     diff = cv.cvtColor(diff, cv.COLOR_BGR2GRAY)
-                    ret,diff_ = cv.threshold((diff),30,255,cv.THRESH_BINARY)
+                    ret,diff_ = cv.threshold((diff),80,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
                     
@@ -672,7 +672,7 @@ class Video:
                 elif i != 0:
                     current = frame
                     diff = cv.absdiff(previous,current)
-                    ret,diff_ = cv.threshold((diff),20,255,cv.THRESH_BINARY)
+                    ret,diff_ = cv.threshold((diff),80,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
             
