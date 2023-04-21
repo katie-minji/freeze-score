@@ -580,7 +580,7 @@ class Video:
                     current = frame
                     diff = cv.absdiff(previous,current)
                     diff = cv.cvtColor(diff, cv.COLOR_BGR2GRAY)
-                    ret,diff_ = cv.threshold((diff),20,255,cv.THRESH_BINARY)
+                    ret,diff_ = cv.threshold((diff),80,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
             
@@ -631,7 +631,7 @@ class Video:
                 elif i != 0:
                     current = frame
                     diff = cv.absdiff(previous,current)
-                    ret,diff_ = cv.threshold((diff),20,255,cv.THRESH_BINARY)
+                    ret,diff_ = cv.threshold((diff),80,255,cv.THRESH_BINARY)
                     pixel_shift = np.sum(diff_ == 255)
                     pxl_shift.append(pixel_shift)
             
