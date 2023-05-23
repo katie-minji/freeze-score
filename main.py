@@ -78,7 +78,8 @@ for mouse in files:
     path = Setup.find_path(mouse,sub_dir)
     for by_day in files[mouse]:
         
-        Process.mouse(new_path, mouse, by_day)
+        vid = f'{mouse} {by_day[0]}'  #name of vid
+        Process.mouse(new_folder_path, vid)
         start = time.time()
         
         file, txt_file, context = Setup.select_file_ctx(mouse, by_day, path, files, sub_dir)
@@ -94,7 +95,7 @@ for mouse in files:
         
         # light initiation, timestamps (when light comes on)
         lightup = LightTime.light_on(file, light, up_error)
-        ivalues, timestamps, pres_error = LightTime.check_timestamps(lightup, shock_num, new_path, mouse, by_day, pres_error)
+        ivalues, timestamps, pres_error = LightTime.check_timestamps(lightup, shock_num, new_folder_path, vid, pres_error)
         
         # light going off
         ivalues_2 = LightTime.light_off(file,light,ivalues,tone_duration,down_error)
@@ -114,7 +115,7 @@ for mouse in files:
             
             
         final = {'pxl_shift': pxl_shift, 'on_off_idx': on_off_idx, 'timestamps': timestamps}    
-        final_dict[f'{mouse} {by_day[0]}'] = final
+        final_dict[vid] = final
 
         vid_rn = Process.append(vid_rn, new_folder_path, start, a, total)
 

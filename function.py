@@ -22,26 +22,24 @@ class Process:
         individual_path = os.path.join(new_folder_path, 'individual_mice') 
         
         with open("Video Process Checker.txt","w") as log:
-            log.write("Video Processing Start\n\n")
+            log.write("VIDEO PROCESSING START\n\n")
         
         os.chdir(ori_path)
         
         return new_folder_path, master_path, individual_path
     
     
-    def mouse(new_path, mouse, by_day):
+    def mouse(new_folder_path, vid):
         
         import os
         
         ori_path = os.getcwd()
-        os.chdir(new_path)
+        os.chdir(new_folder_path)
         
-        msg = f'{mouse} {by_day[0]}'
+        print(vid)
         
-        print(msg)
-        
-        with open("Video Process Checker.txt","w") as log:
-            log.write(f"{msg}\n")
+        with open("Video Process Checker.txt","a") as log:
+            log.write(f"{vid}\n")
             
         os.chdir(ori_path)
     
@@ -136,9 +134,6 @@ List of Presentation Number Match Errors:
         os.chdir(ori_path)
         print(msg)
             
-                
-
-    
    
         
 #%%
@@ -292,6 +287,7 @@ class UserSelect:
         import copy
         import tkinter as tk
         global happy, circle
+        
         
         def draw_circle(img_copy, pt):
             pt = np.uint16(np.around(pt))  #round numbers
@@ -559,29 +555,26 @@ class LightTime:
         return lightup
     
     
-    def error(new_path, mouse, by_day, shock_num, ivalues, pres_error):
+    def error(new_folder_path, vid, shock_num, ivalues, pres_error):
         
         import os
         
         ori_path = os.getcwd()
-        os.chdir(new_path)
+        os.chdir(new_folder_path)
         
         msg = "presentation number in video doesn't match..."
         
-        print(msg)
-        
-        with open("Video Process Checker.txt","w") as log:
+        with open("Video Process Checker.txt","a") as log:
             log.write(f"{msg}\n")
             
         os.chdir(ori_path)
         
-        video = f'{mouse} {by_day[0]}'
-        pres_error[video] = [shock_num+1, ivalues]  #tuple of original pres, video pres
+        pres_error[vid] = [shock_num+1, len(ivalues)]  #tuple of original pres, video pres
         
         return pres_error
     
     
-    def check_timestamps(lightup, shock_num, new_path, mouse, by_day, pres_error):
+    def check_timestamps(lightup, shock_num, new_folder_path, vid, pres_error):
         
         import numpy as np
         import time
@@ -597,7 +590,7 @@ class LightTime:
             ivalues.append(lightup[idx+1])
             
         if len(ivalues) != shock_num+1:
-            LightTime.error(new_path, mouse, by_day, shock_num, ivalues, pres_error)
+            LightTime.error(new_folder_path, vid, shock_num, ivalues, pres_error)
         
         timestamps = [time.strftime('%H:%M:%S', time.gmtime(round(x/30))) for x in ivalues]  
         
