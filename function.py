@@ -15,12 +15,35 @@ class Process:
         new_folder_path = os.path.join(new_path, filename)
         os.chdir(new_folder_path)
         
+        os.mkdir('master_pickle')
+        master_path = os.path.join(new_folder_path, 'master_pickle')
+        
+        os.mkdir('individual_mice')
+        individual_path = os.path.join(new_folder_path, 'individual_mice') 
+        
         with open("Video Process Checker.txt","w") as log:
-            log.write("Video Processing Start")
+            log.write("Video Processing Start\n\n")
         
         os.chdir(ori_path)
         
-        return new_folder_path
+        return new_folder_path, master_path, individual_path
+    
+    
+    def mouse(new_path, mouse, by_day):
+        
+        import os
+        
+        ori_path = os.getcwd()
+        os.chdir(new_path)
+        
+        msg = f'{mouse} {by_day[0]}'
+        
+        print(msg)
+        
+        with open("Video Process Checker.txt","w") as log:
+            log.write(f"{msg}\n")
+            
+        os.chdir(ori_path)
     
     
     def append(vid_rn, new_folder_path, start, a, total):
@@ -40,23 +63,81 @@ class Process:
         temp = time.strftime('%H:%M:%S', time.gmtime(end-a))
         perc = round((vid_rn/total),3)
         time_left = time.strftime('%H:%M:%S', time.gmtime(elapsed*((1-perc)/perc)))
-        _ = datetime.now()+timedelta(seconds=(elapsed*(1/perc)))
+        _ = datetime.now()+timedelta(seconds=(elapsed*((1-perc)/perc)))
         endtime = _.strftime('%I:%M %p')
         
         _ = f'''video elapsed: {execution_time}
-        total elapsed: {temp}
-        progress: {vid_rn}/{total} ({perc*100}%)
-        End approximatly {endtime}. {time_left} left.\n\n
-        '''
+total elapsed: {temp}
+progress: {vid_rn}/{total} ({perc*100}%)
+End approximatly {endtime}. {time_left} left.\n\n'''
         
         with open("Video Process Checker.txt", 'a') as log:
             log.write(_)
         
         os.chdir(ori_path)
         print(_)
-           
         
         return vid_rn
+    
+    
+    def final_append(a, final_start, new_folder_path):
+        
+        import time
+        from datetime import datetime
+        import os
+        
+        ori_path = os.getcwd()
+        os.chdir(new_folder_path)
+        
+        b = time.time()
+        total_time = time.strftime('%H:%M:%S', time.gmtime(b-a))
+        final_end = datetime.now().strftime('%I:%M %p')
+        _ = f'''
+=======================================================
+Finished video analyzation!
+TOTAL EXECUATION TIME: {total_time}
+START TIME: {final_start}
+END TIME: {final_end}
+======================================================='''
+        
+        with open("Video Process Checker.txt", 'a') as log:
+            log.write(_)
+            
+        os.chdir(ori_path)
+        print(_)
+            
+    
+    def error_append(new_folder_path, pres_error):
+        
+        import os
+        ori_path = os.getcwd()
+        os.chdir(new_folder_path)
+        
+        if bool(pres_error) == True:  #if dictionary isn't empty
+            
+            msg = """
+
+=======================================================
+List of Presentation Number Match Errors: 
+"""
+            i = 1
+            for k,v in pres_error.items():
+                msg = msg+f'''
+{i}. {k}
+   - original:   {v[0]}
+   - vid output: {v[1]}
+'''
+                i+=1
+            msg = msg + '\n======================================================='        
+        
+        with open("Video Process Checker.txt", 'a') as log:
+            log.write(msg)
+        
+        os.chdir(ori_path)
+        print(msg)
+            
+                
+
     
    
         
@@ -64,22 +145,22 @@ class Process:
 
 class Pickle:
     
-    def version(final_dict, new_folder_path):
+    def version(final_dict, master_path):
         
         import pickle
         import os
         
-        os.chdir(new_folder_path)
+        os.chdir(master_path)
         with open('master.pkl', 'wb') as handle:
             pickle.dump(final_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     
-    def by_mouse(final_dict):
+    def by_mouse(final_dict, individual_path):
         
         import pickle
         import os
         
-        os.chdir()
+        os.chdir(individual_path)
         separated = {}
         
         for vid_name in final_dict.keys():
@@ -93,8 +174,6 @@ class Pickle:
             with open(mouse, 'wb') as handle:
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
-        return separated
-    
     
 #%%
     
@@ -445,8 +524,10 @@ class UserSelect:
         down_error = off + error
         
         return up_error, down_error
+    
 
 #%%
+
 
 class LightTime:
     
@@ -478,7 +559,29 @@ class LightTime:
         return lightup
     
     
-    def check_timestamps(lightup, shock_num):
+    def error(new_path, mouse, by_day, shock_num, ivalues, pres_error):
+        
+        import os
+        
+        ori_path = os.getcwd()
+        os.chdir(new_path)
+        
+        msg = "presentation number in video doesn't match..."
+        
+        print(msg)
+        
+        with open("Video Process Checker.txt","w") as log:
+            log.write(f"{msg}\n")
+            
+        os.chdir(ori_path)
+        
+        video = f'{mouse} {by_day[0]}'
+        pres_error[video] = [shock_num+1, ivalues]  #tuple of original pres, video pres
+        
+        return pres_error
+    
+    
+    def check_timestamps(lightup, shock_num, new_path, mouse, by_day, pres_error):
         
         import numpy as np
         import time
@@ -494,11 +597,11 @@ class LightTime:
             ivalues.append(lightup[idx+1])
             
         if len(ivalues) != shock_num+1:
-            print("presentation number in video doesn't match...\n")
+            LightTime.error(new_path, mouse, by_day, shock_num, ivalues, pres_error)
         
         timestamps = [time.strftime('%H:%M:%S', time.gmtime(round(x/30))) for x in ivalues]  
         
-        return ivalues, timestamps
+        return ivalues, timestamps, pres_error
     
     
     def light_off(file,light,ivalues,tone_duration,down_error):
@@ -603,7 +706,49 @@ class Video:
         return pxl_shift
     
     
-    
+    def squareB(file):
+        
+        import cv2 as cv
+        import numpy as np
+        
+        i = 0
+        pxl_shift = []
+        cap = cv.VideoCapture(file)
+        
+        while(cap.isOpened()):
+            
+            ret, frame = cap.read()
+            if ret == True:
+                
+                if i == 0:
+                    previous = frame
+                    current = frame
+
+                elif i != 0:
+                    current = frame
+                    diff = cv.absdiff(previous,current)
+                    diff = cv.cvtColor(diff, cv.COLOR_BGR2GRAY)
+                    ret,diff_ = cv.threshold((diff),30,255,cv.THRESH_BINARY)
+                    pixel_shift = np.sum(diff_ == 255)
+                    pxl_shift.append(pixel_shift)
+            
+                previous = current
+                i+=1
+                
+            else:
+                break
+            
+        cap.release()  
+        cv.destroyAllWindows()
+        
+        # thres = pxl_shift[20760:22560]
+        # import cv2
+        # cv2.imshow('window', diff_)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        
+        
+        return pxl_shift
     
     
     def circle(file,circle):
@@ -645,7 +790,6 @@ class Video:
         cap.release()  
         cv.destroyAllWindows()
             
-        
         return pxl_shift
         
     
